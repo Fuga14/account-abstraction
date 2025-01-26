@@ -21,9 +21,9 @@ contract MinimalAccount is IAccount, Ownable {
                                  ERRORS
     //////////////////////////////////////////////////////////////*/
 
-    error NonFromEntryPoint();
+    error NotFromEntryPoint();
 
-    error NonFromEntryPointOrOwner();
+    error NotFromEntryPointOrOwner();
 
     error ExecutionFailed(bytes result);
 
@@ -32,16 +32,16 @@ contract MinimalAccount is IAccount, Ownable {
     //////////////////////////////////////////////////////////////*/
 
     modifier onlyEntryPoint() {
-        if (msg.sender != address(entryPoint)) revert NonFromEntryPoint();
+        if (msg.sender != address(entryPoint)) revert NotFromEntryPoint();
         _;
     }
 
     modifier onlyEntryPointOrOwner() {
-        if (msg.sender != address(entryPoint) || msg.sender != owner()) revert NonFromEntryPointOrOwner();
+        if (msg.sender != address(entryPoint) && msg.sender != owner()) revert NotFromEntryPointOrOwner();
         _;
     }
 
-    constructor(address _entryPoint) Ownable(_msgSender()) {
+    constructor(address _entryPoint) Ownable(msg.sender) {
         entryPoint = IEntryPoint(_entryPoint);
     }
 
