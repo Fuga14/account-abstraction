@@ -4,11 +4,11 @@ pragma solidity ^0.8.28;
 import {Script, console} from "forge-std/Script.sol";
 
 import {MinimalAccount} from "src/ethereum/MinimalAccount.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract OwnerExecution is Script {
     MinimalAccount internal minimalAccount;
-    IERC20 internal link = IERC20(0x779877A7B0D9E8603169DdbD7836e478b4624789);
+    ERC20 internal link = ERC20(0x779877A7B0D9E8603169DdbD7836e478b4624789);
 
     error NotFromEntryPointOrOwner();
 
@@ -25,7 +25,7 @@ contract OwnerExecution is Script {
         // Prepare data for LINK approval
         address dest = address(link);
         uint256 value = 0;
-        bytes memory funcData = abi.encodeWithSelector(IERC20.approve.selector, spender, amount);
+        bytes memory funcData = abi.encodeWithSelector(ERC20.approve.selector, spender, amount);
 
         // Execute
         minimalAccount.execute(dest, value, funcData);
