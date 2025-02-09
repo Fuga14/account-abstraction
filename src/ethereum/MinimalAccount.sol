@@ -15,17 +15,24 @@ contract MinimalAccount is IAccount, Ownable {
                                 STORAGE
     //////////////////////////////////////////////////////////////*/
 
+    /// @dev The entry point contract
     IEntryPoint private immutable entryPoint;
 
     /*//////////////////////////////////////////////////////////////
                                  ERRORS
     //////////////////////////////////////////////////////////////*/
 
+    /// @dev Revert if the message sender is not the entry point
     error NotFromEntryPoint();
 
+    /// @dev Revert if the message sender is not the entry point or the owner
     error NotFromEntryPointOrOwner();
 
+    /// @dev Revert if the execution failed
     error ExecutionFailed(bytes result);
+
+    /// @dev Revert if the address is zero
+    error ZeroAddress();
 
     /*//////////////////////////////////////////////////////////////
                                MODIFIERS
@@ -41,7 +48,14 @@ contract MinimalAccount is IAccount, Ownable {
         _;
     }
 
+    /**
+     * @notice Constructor
+     *
+     * @param _entryPoint The entry point contract address
+     */
     constructor(address _entryPoint) Ownable(msg.sender) {
+        require(_entryPoint != address(0), ZeroAddress());
+
         entryPoint = IEntryPoint(_entryPoint);
     }
 
@@ -51,11 +65,21 @@ contract MinimalAccount is IAccount, Ownable {
                                 EXTERNAL
     //////////////////////////////////////////////////////////////*/
 
-    function validateUserOp(PackedUserOperation calldata userOp, bytes32 userOpHash, uint256 missingAccountFunds)
-        external
-        onlyEntryPoint
-        returns (uint256 validationData)
-    {
+    /**
+     * @notice Validate the user operation
+     * Must validate the caller is a trusted EntryPoint
+     *
+     * @param userOp The operation struct to be validated
+     * @param userOpHash The hash of the operation with signature
+     * @param missingAccountFunds The amount of to be paid during tx
+     *
+     * @return validationData - 0 for valid signature, 1 to mark signature failure
+     */
+    function validateUserOp(
+        PackedUserOperation calldata userOp,
+        bytes32 userOpHash,
+        uint256 missingAccountFunds
+    ) external onlyEntryPoint returns (uint256 validationData) {
         validationData = _validateSignature(userOp, userOpHash);
 
         //TODO: validate nonce
@@ -64,6 +88,14 @@ contract MinimalAccount is IAccount, Ownable {
         _payPrefund(missingAccountFunds);
     }
 
+    /**
+     * @notice Execute the user operation
+     * Caller must be the entryPoint or owner
+     *
+     * @param dest Destination address
+     * @param value Value to be sent during the call
+     * @param funcData The calldata to be sent
+     */
     function execute(address dest, uint256 value, bytes calldata funcData) external onlyEntryPointOrOwner {
         // Make a low-level call to dest
         (bool success, bytes memory ret) = dest.call{value: value}(funcData);
@@ -76,11 +108,10 @@ contract MinimalAccount is IAccount, Ownable {
     //////////////////////////////////////////////////////////////*/
 
     // EIP-191 version of the signed hash
-    function _validateSignature(PackedUserOperation calldata userOp, bytes32 userOpHash)
-        internal
-        view
-        returns (uint256 validationData)
-    {
+    function _validateSignature(
+        PackedUserOperation calldata userOp,
+        bytes32 userOpHash
+    ) internal view returns (uint256 validationData) {
         bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(userOpHash);
         address signer = ECDSA.recover(ethSignedMessageHash, userOp.signature);
 
@@ -89,7 +120,7 @@ contract MinimalAccount is IAccount, Ownable {
 
     function _payPrefund(uint256 missingAccountFunds) internal {
         if (missingAccountFunds != 0) {
-            (bool success,) = payable(msg.sender).call{value: missingAccountFunds, gas: type(uint256).max}("");
+            (bool success, ) = payable(msg.sender).call{value: missingAccountFunds, gas: type(uint256).max}("");
             (success);
         }
     }
