@@ -1,66 +1,40 @@
-## Foundry
+# Setup
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## ENV Setup
 
-Foundry consists of:
+`.env` file setup needs to be set before installing dependencies
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+1. Create a .env file with predefined variables
+2. `cp .env.example .env`
+3. Set all variables
 
-## Documentation
+## Dependencies installation
 
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```bash
+bun install
+forge install
 ```
 
-### Test
+## Test
 
-```shell
-$ forge test
+To run scripts for MinimalAccount on ETH chain run:
+
+```bash
+forge test --match-path test/ethereum/MinimalAccountTest.t.sol -vv
 ```
 
-### Format
+# Scripts running
 
-```shell
-$ forge fmt
+## ZkSync
+
+Contracts compilation:
+
+```bash
+npx hardhat compile --network zkSyncTestnet
 ```
 
-### Gas Snapshots
+Deploy ZkMinimalAccount:
 
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+```bash
+npx hardhat deploy-zksync --script deployZkMinimalAccount.ts --network zkSyncTestnet
 ```
