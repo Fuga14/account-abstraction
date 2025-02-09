@@ -10,20 +10,20 @@ import {
     Transaction,
     MemoryTransactionHelper
 } from "lib/foundry-era-contracts/src/system-contracts/contracts/libraries/MemoryTransactionHelper.sol";
-import {SystemContractsCaller} from
+import { SystemContractsCaller } from
     "lib/foundry-era-contracts/src/system-contracts/contracts/libraries/SystemContractsCaller.sol";
 import {
     NONCE_HOLDER_SYSTEM_CONTRACT,
     BOOTLOADER_FORMAL_ADDRESS,
     DEPLOYER_SYSTEM_CONTRACT
 } from "lib/foundry-era-contracts/src/system-contracts/contracts/Constants.sol";
-import {INonceHolder} from "lib/foundry-era-contracts/src/system-contracts/contracts/interfaces/INonceHolder.sol";
-import {Utils} from "lib/foundry-era-contracts/src/system-contracts/contracts/libraries/Utils.sol";
+import { INonceHolder } from "lib/foundry-era-contracts/src/system-contracts/contracts/interfaces/INonceHolder.sol";
+import { Utils } from "lib/foundry-era-contracts/src/system-contracts/contracts/libraries/Utils.sol";
 
 // OZ Imports
-import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
-import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * Lifecycle of a type 113 (0x71) transaction
@@ -69,9 +69,9 @@ contract ZkMinimalAccount is IAccount, Ownable {
         _;
     }
 
-    constructor() Ownable(msg.sender) {}
+    constructor() Ownable(msg.sender) { }
 
-    receive() external payable {}
+    receive() external payable { }
 
     /*//////////////////////////////////////////////////////////////
                            EXTERNAL FUNCTIONS
@@ -81,20 +81,23 @@ contract ZkMinimalAccount is IAccount, Ownable {
      * @notice must validate the transaction (check the owner signed the transaction)
      * @notice also check to see if we have enough money in our account
      */
-    function validateTransaction(bytes32, /*_txHash*/ bytes32, /*_suggestedSignedHash*/ Transaction memory _transaction)
-        external
-        payable
-        requireFromBootLoader
-        returns (bytes4 magic)
-    {
+    function validateTransaction(
+        bytes32,
+        /*_txHash*/
+        bytes32,
+        /*_suggestedSignedHash*/
+        Transaction memory _transaction
+    ) external payable requireFromBootLoader returns (bytes4 magic) {
         return _validateTransaction(_transaction);
     }
 
-    function executeTransaction(bytes32, /*_txHash*/ bytes32, /*_suggestedSignedHash*/ Transaction memory _transaction)
-        external
-        payable
-        requireFromBootLoaderOrOwner
-    {
+    function executeTransaction(
+        bytes32,
+        /*_txHash*/
+        bytes32,
+        /*_suggestedSignedHash*/
+        Transaction memory _transaction
+    ) external payable requireFromBootLoaderOrOwner {
         _executeTransaction(_transaction);
     }
 
@@ -106,10 +109,13 @@ contract ZkMinimalAccount is IAccount, Ownable {
         _executeTransaction(_transaction);
     }
 
-    function payForTransaction(bytes32, /*_txHash*/ bytes32, /*_suggestedSignedHash*/ Transaction memory _transaction)
-        external
-        payable
-    {
+    function payForTransaction(
+        bytes32,
+        /*_txHash*/
+        bytes32,
+        /*_suggestedSignedHash*/
+        Transaction memory _transaction
+    ) external payable {
         bool success = _transaction.payToTheBootloader();
         if (!success) {
             revert ZkMinimalAccount__FailedToPay();
@@ -119,7 +125,7 @@ contract ZkMinimalAccount is IAccount, Ownable {
     function prepareForPaymaster(bytes32 _txHash, bytes32 _possibleSignedHash, Transaction memory _transaction)
         external
         payable
-    {}
+    { }
 
     /*//////////////////////////////////////////////////////////////
                            INTERNAL FUNCTIONS

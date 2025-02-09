@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Script, console} from "forge-std/Script.sol";
+import { Script, console } from "forge-std/Script.sol";
 
-import {MinimalAccount} from "src/ethereum/MinimalAccount.sol";
+import { MinimalAccount } from "src/ethereum/MinimalAccount.sol";
 
 contract DeployMinimalAccount is Script {
     function run() public {
