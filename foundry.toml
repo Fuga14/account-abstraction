@@ -4,4 +4,8 @@ out = "out"
 libs = ["lib"]
 is-system = true
 via-ir = true
+
+[fmt]
+bracket_spacing = true
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
