@@ -84,8 +84,7 @@ contract MinimalAccountTest is Test {
 
         bytes memory callData = abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, funcData);
 
-        PackedUserOperation memory packedUserOp =
-            generateSignedUserOperation(deployer, callData, address(minimalAccount));
+        PackedUserOperation memory packedUserOp = generateSignedUserOperation(callData, address(minimalAccount));
 
         bytes32 userOpHash = entryPoint.getUserOpHash(packedUserOp);
         address singer = ECDSA.recover(userOpHash.toEthSignedMessageHash(), packedUserOp.signature);
@@ -104,8 +103,7 @@ contract MinimalAccountTest is Test {
 
         bytes memory callData = abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, funcData);
 
-        PackedUserOperation memory packedUserOp =
-            generateSignedUserOperation(deployer, callData, address(minimalAccount));
+        PackedUserOperation memory packedUserOp = generateSignedUserOperation(callData, address(minimalAccount));
 
         bytes32 userOpHash = entryPoint.getUserOpHash(packedUserOp);
         address singer = ECDSA.recover(userOpHash.toEthSignedMessageHash(), packedUserOp.signature);
@@ -127,7 +125,7 @@ contract MinimalAccountTest is Test {
 
         bytes memory callData = abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, funcData);
 
-        PackedUserOperation memory packedUserOp = generateSignedUserOperation(alice, callData, address(minimalAccount));
+        PackedUserOperation memory packedUserOp = generateSignedUserOperation(callData, address(minimalAccount));
 
         // bytes32 userOpHash = entryPoint.getUserOpHash(packedUserOp);
         vm.stopBroadcast();
@@ -149,7 +147,7 @@ contract MinimalAccountTest is Test {
                             HELPER FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
-    function generateSignedUserOperation(address _sender, bytes memory callData, address _minimalAccount)
+    function generateSignedUserOperation(bytes memory callData, address _minimalAccount)
         internal
         view
         returns (PackedUserOperation memory)
